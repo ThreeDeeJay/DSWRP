@@ -49,8 +49,8 @@ for /F "tokens=2 delims==" %%H in ('set RegistryHive[') do (
 				)
 			SET /P var=!RegistryPath!: <NUL
 			IF "!WindowsArchitectureBits!"=="64" (
-				SetACL.exe -on "!RegistryPath!" -ot reg -actn setowner -ownr "n:Administrators" -rec Yes  1>>NUL 2>&1
-				SetACL.exe -on "!RegistryPath!" -ot reg -actn ace -ace "n:Administrators;p:full" -rec Yes  1>>NUL 2>&1
+				SetACL.exe -on "!RegistryPath!" -ot reg -actn setowner -ownr "n:%USERNAME%\%USERNAME%" -rec Yes  1>>NUL 2>&1
+				SetACL.exe -on "!RegistryPath!" -ot reg -actn ace -ace "n:%USERNAME%\%USERNAME%;p:full" -rec Yes  1>>NUL 2>&1
 				)
 			reg add "!RegistryPath!" /V "" /T "REG_SZ" /D "dsound.dll" /F <NUL
 			IF !ERRORLEVEL! NEQ 0 (SET FailedTask=True)
