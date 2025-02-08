@@ -20,7 +20,7 @@ SET RegistryID[4]={B2F586D4-5558-49D1-A07B-3249DBBB33C2}
 SET RegistryID[5]={E4BCAC13-7F99-4908-9A8E-74E3BF24B6E1}
 SET RegistryID[6]={FEA4300C-7959-4147-B26A-2377B9E7A91D}
 
-TITLE DirectSound wrapper registry patcher v1.1 - By 3DJ with credit to Henky!!, John-Paul Ownby and Nucleoprotein
+TITLE DirectSound wrapper registry patcher v1.2 - By 3DJ with credit to Henky!!, John-Paul Ownby and Nucleoprotein
 ECHO.
 ECHO Registering DirectSound references (dsound.dll)...
 
@@ -54,6 +54,10 @@ for /F "tokens=2 delims==" %%H in ('set RegistryHive[') do (
 				)
 			reg add "!RegistryPath!" /V "" /T "REG_SZ" /D "dsound.dll" /F <NUL
 			IF !ERRORLEVEL! NEQ 0 (SET FailedTask=True)
+			IF "!WindowsArchitectureBits!"=="64" (
+				SetACL.exe -on "!RegistryPath!" -ot reg -actn setowner -ownr "n:NT SERVICE\TrustedInstaller" -rec Yes  1>>NUL 2>&1
+				SetACL.exe -on "!RegistryPath!" -ot reg -actn ace -ace "n:NT SERVICE\TrustedInstaller;p:full" -rec Yes  1>>NUL 2>&1
+				)
 			)
 		)
 	)
