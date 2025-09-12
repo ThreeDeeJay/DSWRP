@@ -6,7 +6,7 @@ Automated and expanded version of:
   - https://www.indirectsound.com/registryIssues.html
   - https://www.vogons.org/viewtopic.php?p=692601#p692601  
 
-This registry key patch script is required for some apps/games to load the local `dsound.dll` (used by DirectSound3D wrappers like DSOAL and Creative ALchemy) instead of `C:\Windows\SysWOW64\dsound.dll` on Windows 8+ 64-bit.  
+This registry key patch script is required for some apps/games to load the local `dsound.dll` (used by DirectSound3D wrappers like DSOAL and Creative ALchemy) instead of `C:\Windows\SysWOW64\dsound.dll`.  
 
 It also creates a `Backup.reg` file that you can merge to revert all changes made by the script.
 The release version includes SetACL ([with explicit permission from the developer as required](https://github.com/user-attachments/assets/f7801af2-93d3-4ec6-8b59-d746cd6c5328)), a program that automatically takes ownerwhip of the system-protected registry keys so that the user doesn't have to.
