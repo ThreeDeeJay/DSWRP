@@ -20,49 +20,53 @@ SET RegistryID[4]={B2F586D4-5558-49D1-A07B-3249DBBB33C2}
 SET RegistryID[5]={E4BCAC13-7F99-4908-9A8E-74E3BF24B6E1}
 SET RegistryID[6]={FEA4300C-7959-4147-B26A-2377B9E7A91D}
 
-TITLE DirectSound wrapper registry patcher v1.2 - By 3DJ with credit to Henky!!, John-Paul Ownby and Nucleoprotein
+TITLE DirectSound wrapper registry patcher v1.3 - By 3DJ with credit to Henky!!, John-Paul Ownby and Nucleoprotein
 ECHO.
 ECHO Registering DirectSound references (dsound.dll)...
 
-IF NOT EXIST "Backup.reg" (
-	ECHO Windows Registry Editor Version 5.00>"Backup.reg"
-	)
-
-for /F "tokens=2 delims==" %%H in ('set RegistryHive[') do (
-	for /F "tokens=2 delims==" %%N in ('set RegistryNode[') do (
-		for /F "tokens=2 delims==" %%I in ('set RegistryID[') do (
-			SET "RegistryPath=%%H\SOFTWARE\Classes%%NCLSID\%%I\InprocServer32"
-			IF NOT EXIST "Backup" (MKDIR "Backup")
-			IF NOT EXIST "Backup\!RegistryPath:\=-!.reg" (
-				reg query "!RegistryPath!" 1>> NUL 2>&1
-				IF !ERRORLEVEL! EQU 0 (
-					reg export "!RegistryPath!" "Backup\!RegistryPath:\=-!.reg" /y 1>>NUL 2>&1
-					IF EXIST "Backup\!RegistryPath:\=-!.reg" (type "Backup\!RegistryPath:\=-!.reg" | find /v "Windows Registry Editor Version 5.00">>"Backup.reg")
-					) ELSE (
-					ECHO Windows Registry Editor Version 5.00>"Backup\!RegistryPath:\=-!.reg"
-					ECHO.>>"Backup\!RegistryPath:\=-!.reg"
-					ECHO [-!RegistryPath!]>>"Backup\!RegistryPath:\=-!.reg"
-					ECHO.>>"Backup\!RegistryPath:\=-!.reg"
-					ECHO.>>"Backup\!RegistryPath:\=-!.reg"
-					type "Backup\!RegistryPath:\=-!.reg" | find /v "Windows Registry Editor Version 5.00">>"Backup.reg"
+whoami /groups | find "S-1-16-12288" > nul
+if !ErrorLevel! == 0 (
+	IF NOT EXIST "Backup.reg" (
+		ECHO Windows Registry Editor Version 5.00>"Backup.reg"
+		)
+	for /F "tokens=2 delims==" %%H in ('set RegistryHive[') do (
+		for /F "tokens=2 delims==" %%N in ('set RegistryNode[') do (
+			for /F "tokens=2 delims==" %%I in ('set RegistryID[') do (
+				SET "RegistryPath=%%H\SOFTWARE\Classes%%NCLSID\%%I\InprocServer32"
+				IF NOT EXIST "Backup" (MKDIR "Backup")
+				IF NOT EXIST "Backup\!RegistryPath:\=-!.reg" (
+					reg query "!RegistryPath!" 1>> NUL 2>&1
+					IF !ERRORLEVEL! EQU 0 (
+						reg export "!RegistryPath!" "Backup\!RegistryPath:\=-!.reg" /y 1>>NUL 2>&1
+						IF EXIST "Backup\!RegistryPath:\=-!.reg" (type "Backup\!RegistryPath:\=-!.reg" | find /v "Windows Registry Editor Version 5.00">>"Backup.reg")
+						) ELSE (
+						ECHO Windows Registry Editor Version 5.00>"Backup\!RegistryPath:\=-!.reg"
+						ECHO.>>"Backup\!RegistryPath:\=-!.reg"
+						ECHO [-!RegistryPath!]>>"Backup\!RegistryPath:\=-!.reg"
+						ECHO.>>"Backup\!RegistryPath:\=-!.reg"
+						ECHO.>>"Backup\!RegistryPath:\=-!.reg"
+						type "Backup\!RegistryPath:\=-!.reg" | find /v "Windows Registry Editor Version 5.00">>"Backup.reg"
+						)
 					)
+				SET /P var=!RegistryPath!: <NUL
+				IF "!WindowsArchitectureBits!"=="64" (
+					SetACL.exe -on "!RegistryPath!" -ot reg -actn setowner -ownr "n:Administrators" -rec Yes  1>>NUL 2>&1
+					SetACL.exe -on "!RegistryPath!" -ot reg -actn ace -ace "n:Administrators;p:full" -rec Yes  1>>NUL 2>&1
+					)
+				reg add "!RegistryPath!" /V "" /T "REG_SZ" /D "dsound.dll" /F <NUL
+				IF !ERRORLEVEL! NEQ 0 (SET FailedTask=True)
 				)
-			SET /P var=!RegistryPath!: <NUL
-			IF "!WindowsArchitectureBits!"=="64" (
-				SetACL.exe -on "!RegistryPath!" -ot reg -actn setowner -ownr "n:S-1-5-32-544" -rec Yes  1>>NUL 2>&1
-				SetACL.exe -on "!RegistryPath!" -ot reg -actn ace -ace "n:S-1-5-32-544;p:full" -rec Yes  1>>NUL 2>&1
-				)
-			reg add "!RegistryPath!" /V "" /T "REG_SZ" /D "dsound.dll" /F <NUL
-			IF !ERRORLEVEL! NEQ 0 (SET FailedTask=True)
 			)
 		)
+	ECHO.
+	IF "!FailedTask!"=="True" (
+		COLOR C
+		ECHO WARNING: Some tasks have failed. Please, close this window then right click this .cmd file ^> Run as administrator
+		) ELSE (
+		COLOR A
+		ECHO SUCCESS: All registry keys have been updated.
+		)
+	) else (
+	echo Failed to acquire elevation. Please, close this window then right click this .cmd file ^> Run as administrator
 	)
-ECHO.
-IF "!FailedTask!"=="True" (
-	COLOR C
-	ECHO WARNING: Some tasks have failed. Please, close this window then right click this .bat ^> Run as administrator
-	) ELSE (
-	COLOR A
-	ECHO SUCCESS: All registry keys have been updated.
-	)
-PAUSE
+	pause
