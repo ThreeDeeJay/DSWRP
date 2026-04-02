@@ -1,7 +1,10 @@
 @ECHO OFF
 SETlocal EnableExtensions
 SETlocal EnableDelayedExpansion
-MODE con: cols=150 lines=50
+If not defined WINE (
+	MODE con: cols=150 lines=50
+	)
+
 pushd "%~dp0"
 
 reg Query "HKLM\Hardware\Description\System\CentralProcessor\0" | find /i "x86" > NUL || SET "WindowsArchitectureBits=64"
@@ -20,11 +23,13 @@ SET RegistryID[4]={B2F586D4-5558-49D1-A07B-3249DBBB33C2}
 SET RegistryID[5]={E4BCAC13-7F99-4908-9A8E-74E3BF24B6E1}
 SET RegistryID[6]={FEA4300C-7959-4147-B26A-2377B9E7A91D}
 
-TITLE DirectSound wrapper registry patcher v1.3 - By 3DJ with credit to Henky!!, John-Paul Ownby and Nucleoprotein
+TITLE DirectSound wrapper registry patcher v1.4 - By 3DJ with credit to Henky!!, John-Paul Ownby and Nucleoprotein
 ECHO.
 ECHO Registering DirectSound references (dsound.dll)...
 
-whoami /groups | find "S-1-16-12288" > nul
+If not defined WINE (
+	whoami /groups | find "S-1-16-12288" > nul
+	)
 if !ErrorLevel! == 0 (
 	IF NOT EXIST "Backup.reg" (
 		ECHO Windows Registry Editor Version 5.00>"Backup.reg"
